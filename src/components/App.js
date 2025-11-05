@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import "./../styles/App.css";
 
-// Utility to create tasks
+// Generate 50 tasks: 25 active, 25 completed
 const generateTasks = () => {
   const tasks = [];
   for (let i = 1; i <= 25; i++) {
@@ -13,22 +13,21 @@ const generateTasks = () => {
   return tasks;
 };
 
-// Artificial slowdown function
-const slowDown = () => {
-  const start = Date.now();
-  while (Date.now() - start < 5) {} // 5ms delay per task
+// Simulate heavy computation
+const slowDown = (ms = 5) => {
+  const start = performance.now();
+  while (performance.now() - start < ms) {}
 };
 
 const App = () => {
-  const [tasks] = useState(generateTasks());
-  const [filter, setFilter] = useState("All");
-  const [darkMode, setDarkMode] = useState(false);
+  const [tasks] = useState(generateTasks()); // Tasks don't change
+  const [filter, setFilter] = useState("All"); // Filter tab state
+  const [darkMode, setDarkMode] = useState(false); // Dark mode state
 
   // Memoized filtered tasks
   const filteredTasks = useMemo(() => {
-    console.log("Filtering tasks..."); // Demonstrates memoization
     return tasks.filter((task) => {
-      slowDown(); // simulate heavy computation
+      slowDown(); // artificial slowdown
       if (filter === "All") return true;
       if (filter === "Active") return !task.completed;
       if (filter === "Completed") return task.completed;
@@ -40,16 +39,16 @@ const App = () => {
     <div
       className="main-container"
       style={{
-        background: darkMode ? "#222" : "#f5f5f5",
+        backgroundColor: darkMode ? "#222" : "#f5f5f5",
         color: darkMode ? "#fff" : "#000",
         minHeight: "100vh",
         padding: "20px",
       }}
     >
-      <h1>Todo App with useMemo</h1>
+      <h1>Todo App - useMemo Performance</h1>
 
       {/* Dark mode toggle */}
-      <button onClick={() => setDarkMode((prev) => !prev)} style={{ marginBottom: "20px" }}>
+      <button onClick={() => setDarkMode(!darkMode)} style={{ marginBottom: "20px" }}>
         Toggle {darkMode ? "Light" : "Dark"} Mode
       </button>
 
@@ -69,10 +68,10 @@ const App = () => {
         ))}
       </div>
 
-      {/* Task list */}
+      {/* Task List */}
       <ul>
         {filteredTasks.map((task) => (
-          <li key={task.id} style={{ marginBottom: "5px" }}>
+          <li key={task.id}>
             {task.text} {task.completed ? "(Completed)" : "(Active)"}
           </li>
         ))}
